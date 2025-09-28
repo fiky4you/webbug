@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Bug No Work</title>
+    <style>
+        /* Global Reset & Body Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #E0E0E0;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* Background dengan efek gradien dinamis */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* Efek partikel di background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(77, 171, 247, 0.3);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Container (Kotak Form) Styling */
+        .container {
+            background: rgba(20, 20, 30, 0.85); 
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 123, 255, 0.3), 
+                        0 0 0 1px rgba(0, 123, 255, 0.1);
+            width: 380px;
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 123, 255, 0.4), 
+                        0 0 0 1px rgba(0, 123, 255, 0.2);
+        }
+
+        .container.hidden {
+            display: none;
+        }
+
+        /* Header Styling */
+        h1 {
+            text-align: center;
+            color: #4dabf7; 
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(77, 171, 247, 0.5);
+        }
+
+        /* Label Styling */
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            font-weight: 500;
+            color: #B0B0B0;
+            font-size: 14px;
+        }
+
+        /* Input Field Styling */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            background-color: rgba(30, 30, 40, 0.8); 
+            color: #FFFFFF; 
+            border: 1px solid rgba(68, 68, 68, 0.5);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        /* Hover dan Focus pada Input */
+        input[type="text"]:hover,
+        input[type="password"]:hover,
+        input[type="number"]:hover {
+            border-color: rgba(0, 123, 255, 0.5);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus {
+            border-color: #4dabf7;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+            background-color: rgba(30, 30, 40, 0.9);
+        }
+
+        /* Input yang error */
+        input.error {
+            border-color: #ff4d4d;
+            box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+        }
+
+        /* === PERUBAHAN CSS UNTUK PILIHAN BUG === */
+
+        /* Sembunyikan radio button asli */
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        /* Styling untuk label yang akan menjadi tombol */
+        .radio-group label {
+            display: block;
+            background-color: rgba(30, 30, 40, 0.8);
+            color: #E0E0E0;
+            padding: 14px;
+            margin: 8px 0;
+            border: 1px solid rgba(68, 68, 68, 0.5);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efek hover pada tombol */
+        .radio-group label:hover {
+            border-color: rgba(77, 171, 247, 0.7);
+            background-color: rgba(40, 40, 60, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Styling untuk tombol yang SEDANG DIPILIH */
+        .radio-group input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, rgba(77, 171, 247, 0.2) 0%, rgba(0, 123, 255, 0.3) 100%);
+            border-color: #4dabf7;
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(77, 171, 247, 0.5);
+        }
+
+        /* Efek cahaya untuk tombol yang dipilih */
+        .radio-group input[type="radio"]:checked + label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .radio-group input[type="radio"]:checked + label:hover::before {
+            left: 100%;
+        }
+
+        /* === AKHIR DARI PERUBAHAN CSS === */
+
+        /* Button Styling */
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #007bff 0%, #4dabf7 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Efek kilat saat hover */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
+        }
+
+        /* Button untuk BUG FREEZE */
+        button.bug-freeze {
+            background: linear-gradient(135deg, #007bff 0%, #4dabf7 100%);
+        }
+
+        /* Button untuk BUG CRASH */
+        button.bug-crash {
+            background: linear-gradient(135deg, #dc3545 0%, #e35d6a 100%);
+        }
+
+        /* Button untuk BUG INVISIBLE */
+        button.bug-invisible {
+            background: linear-gradient(135deg, #28a745 0%, #5cb85c 100%);
+        }
+
+        /* Error Message Styling */
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 6px;
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+
+        /* Animasi untuk transisi halaman */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Logo/Header untuk halaman bug */
+        .bug-header {
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(77, 171, 247, 0.1) 0%, rgba(0, 123, 255, 0.2) 100%);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bug-header h2 {
+            color: #4dabf7;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(77, 171, 247, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Styling untuk logo */
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4dabf7 0%, #007bff 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 0 10px rgba(77, 171, 247, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px rgba(77, 171, 247, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(77, 171, 247, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(77, 171, 247, 0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background dengan gradien -->
+    <div class="background"></div>
+    
+    <!-- Efek partikel -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Audio untuk efek suara seram -->
+    <audio id="scary-sound" preload="auto">
+        <source src="https://files.catbox.moe/dbmwtf.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <div id="login-container" class="container">
+        <h1>Login Web Bug</h1>
+        <form id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required placeholder="Masukkan username">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required placeholder="Masukkan password">
+            <button type="submit">MASUK</button>
+            <p id="login-message" class="error-message hidden"></p>
+        </form>
+    </div>
+
+    <div id="data-input-container" class="container hidden">
+        <!-- Header untuk halaman bug -->
+        <div class="bug-header">
+            <h2>
+                <div class="logo">DS</div>
+                WEB BUG BY DINN STORE
+            </h2>
+        </div>
+        
+        <form id="data-form">
+            <label for="nomor-input">Tulis Nomor:</label>
+            <input type="text" id="nomor-input" required placeholder="Contoh: 628123456789">
+            <p id="nomor-error" class="error-message hidden">Nomor harus diawali dengan 62!</p>
+
+            <label>Pilih Jenis Bug:</label>
+            <div class="radio-group">
+                <input type="radio" id="opsi1" name="pilihan" value="BUG FREEZE" required>
+                <label for="opsi1">BUG FREEZE</label>
+
+                <input type="radio" id="opsi2" name="pilihan" value="BUG CRASH">
+                <label for="opsi2">BUG CRASH</label>
+
+                <input type="radio" id="opsi3" name="pilihan" value="BUG INVISIBLE">
+                <label for="opsi3">BUG INVISIBLE</label>
+            </div>
+            <button type="submit" id="submit-button">KIRIM</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const dataForm = document.getElementById('data-form');
+            const loginContainer = document.getElementById('login-container');
+            const dataInputContainer = document.getElementById('data-input-container');
+            const loginMessage = document.getElementById('login-message');
+            const nomorError = document.getElementById('nomor-error');
+            const scarySound = document.getElementById('scary-sound');
+            const submitButton = document.getElementById('submit-button');
+            const nomorInput = document.getElementById('nomor-input');
+            const particlesContainer = document.getElementById('particles');
+
+            // Kredensial yang benar (HANYA CONTOH!)
+            const CORRECT_USERNAME = 'DINN STR';
+            const CORRECT_PASSWORD = '0506';
+
+            // Buat efek partikel
+            function createParticles() {
+                const particleCount = 50;
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Posisi acak
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    
+                    // Animasi dengan delay acak
+                    particle.style.animationDelay = `${Math.random() * 15}s`;
+                    
+                    // Ukuran acak
+                    const size = Math.random() * 3 + 1;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Warna biru dengan variasi opacity
+                    const opacity = Math.random() * 0.5 + 0.1;
+                    particle.style.background = `rgba(77, 171, 247, ${opacity})`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            // Panggil fungsi untuk membuat partikel
+            createParticles();
+
+            // Handler untuk Login Form
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Validasi Kredensial
+                if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+                    // Login Berhasil: Sembunyikan Login, Tampilkan Input Data
+                    loginContainer.classList.add('hidden');
+                    dataInputContainer.classList.remove('hidden');
+                    loginMessage.classList.add('hidden'); 
+                } else {
+                    // Login Gagal
+                    loginMessage.textContent = 'Username atau Password salah. Coba lagi!';
+                    loginMessage.classList.remove('hidden'); 
+                }
+            });
+
+            // Handler untuk validasi nomor
+            nomorInput.addEventListener('input', function() {
+                const nomor = this.value;
+                
+                // Reset error state
+                this.classList.remove('error');
+                nomorError.classList.add('hidden');
+                
+                // Validasi jika nomor sudah diisi
+                if (nomor && !nomor.startsWith('62')) {
+                    this.classList.add('error');
+                    nomorError.classList.remove('hidden');
+                }
+            });
+
+            // Handler untuk mengubah tombol sesuai pilihan bug
+            document.querySelectorAll('input[name="pilihan"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Hapus semua kelas bug dari tombol
+                    submitButton.classList.remove('bug-freeze', 'bug-crash', 'bug-invisible');
+                    
+                    // Tambahkan kelas sesuai pilihan
+                    if (this.value === 'BUG FREEZE') {
+                        submitButton.classList.add('bug-freeze');
+                        submitButton.textContent = 'KIRIM BUG FREEZE';
+                    } else if (this.value === 'BUG CRASH') {
+                        submitButton.classList.add('bug-crash');
+                        submitButton.textContent = 'KIRIM BUG CRASH';
+                    } else if (this.value === 'BUG INVISIBLE') {
+                        submitButton.classList.add('bug-invisible');
+                        submitButton.textContent = 'KIRIM BUG INVISIBLE';
+                    }
+                });
+            });
+
+            // Handler untuk Data Input Form
+            dataForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const nomor = nomorInput.value;
+                const pilihanRadio = document.querySelector('input[name="pilihan"]:checked');
+                const pilihan = pilihanRadio ? pilihanRadio.value : 'Tidak ada pilihan yang dipilih';
+
+                // Validasi nomor harus diawali 62
+                if (!nomor.startsWith('62')) {
+                    nomorInput.classList.add('error');
+                    nomorError.classList.remove('hidden');
+                    nomorInput.focus();
+                    return;
+                }
+
+                // Putar suara seram dengan volume maksimal
+                scarySound.volume = 1.0;
+                scarySound.play().catch(e => {
+                    console.log("Autoplay diblokir oleh browser:", e);
+                    // Jika autoplay diblokir, beri tahu pengguna
+                    alert("Suara efek tidak dapat diputar otomatis. Klik tombol 'OK' untuk melanjutkan.");
+                });
+
+                // Tampilkan data yang dikirim
+                alert(`✅ Laporan Berhasil Dikirim!\n\nNomor: ${nomor}\nJenis Bug: ${pilihan}`);
+
+                // Opsional: Reset form input setelah kirim
+                dataForm.reset();
+                
+                // Reset tombol ke keadaan default
+                submitButton.classList.remove('bug-freeze', 'bug-crash', 'bug-invisible');
+                submitButton.textContent = 'KIRIM';
+                
+                // Reset error state
+                nomorInput.classList.remove('error');
+                nomorError.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
